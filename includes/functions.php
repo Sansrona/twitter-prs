@@ -24,3 +24,15 @@ function db_query($sql, $exec =false){
     if($exec) return db()->exec($sql);
     return db()->query($sql);
 }
+
+function get_posts($user_id=0){
+    if($user_id>0) return db_query("SELECT posts.*, users.login, users.name, users.avatar
+    FROM `posts`
+    JOIN `users`
+    ON users.id = posts.user_id
+    WHERE posts.user_id = $user_id"); 
+    return db_query("SELECT posts.*, users.login, users.name, users.avatar
+    FROM `posts`
+    JOIN `users`
+    ON users.id = posts.user_id");
+}

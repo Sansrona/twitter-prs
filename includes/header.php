@@ -30,7 +30,7 @@
         <main class="main">
             <section class="wrapper">
                 <div class="main-header">
-                    <a href="index.html" class="header__link header__link_home" title="Лента"></a>
+                    <a href="<?php echo get_url() ?>" class="header__link header__link_home" title="Лента"></a>
                     <a href="#" class="header__link header__link_profile" title="Твиты пользователя"></a>
                     <a href="#" class="header__link header__link_likes" title="Понравившиеся твиты"></a>
                     <a href="#" class="header__link header__link_sort" title="Сортировать"></a>
