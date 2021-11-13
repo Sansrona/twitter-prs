@@ -99,6 +99,25 @@ function register_user($auth_data)
 
 function login($auth_data)
 {
+    if(empty($auth_data)||!isset($auth_data['login'])||empty($auth_data['login'])||!isset($auth_data['pass'])||empty($auth_data['pass'])){
+        return false;
+    }
+    $user= get_user_info($auth_data['login']);
+    if(empty($user)){
+        $_SESSION['error'] = 'Пользователь не найден';
+        header('Location:' . get_url());
+        die;
+    }
+    if(password_verify($auth_data['pass'], $user['pass'])){
+        $_SESSION['user'] = $user;
+        $_SESSION['error'] = '';
+        header('Location:' . get_url('user_posts.php?id='.$_SESSION['user']['id']));
+        die;
+    }else{
+        $_SESSION['error'] = 'Пароль не верный';
+        header('Location:' . get_url());
+        die;
+    }
 }
 
 function get_error_message()
@@ -111,3 +130,4 @@ function get_error_message()
 
     return $error;
 }
+
