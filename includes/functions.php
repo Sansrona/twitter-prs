@@ -10,6 +10,11 @@ function debug($var, $stop = false)
     if ($stop) die;
 }
 
+function redirect($link=''){
+    header('Location:' . get_url($link));
+    die;
+}
+
 function get_url($page = '')
 {
     return HOST . "/twitter/$page";
@@ -83,17 +88,14 @@ function register_user($auth_data)
     $user = get_user_info($auth_data['login']);
     if (!empty($user)) {
         $_SESSION['error'] = 'Пользователь с таким именем уже существует ';
-        header('Location:' . get_url('register.php'));
-        die;
+        redirect('register.php');
     }
     if ($auth_data['pass'] !== $auth_data['pass2']) {
         $_SESSION['error'] = 'Пароли не совпадают';
-        header('Location:' . get_url('register.php'));
-        die;
+        redirect('register.php');
     }
     if (add_user($auth_data['login'], $auth_data['pass'])) {
-        header('Location:' . get_url());
-        die;
+        redirect();
     }
 }
 
@@ -105,18 +107,15 @@ function login($auth_data)
     $user= get_user_info($auth_data['login']);
     if(empty($user)){
         $_SESSION['error'] = 'Пользователь не найден';
-        header('Location:' . get_url());
-        die;
+        redirect();
     }
     if(password_verify($auth_data['pass'], $user['pass'])){
         $_SESSION['user'] = $user;
         $_SESSION['error'] = '';
-        header('Location:' . get_url('user_posts.php?id='.$_SESSION['user']['id']));
-        die;
+        redirect('user_posts.php?id='.$_SESSION['user']['id']);
     }else{
         $_SESSION['error'] = 'Пароль не верный';
-        header('Location:' . get_url());
-        die;
+        redirect();
     }
 }
 

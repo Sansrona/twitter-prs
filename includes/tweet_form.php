@@ -1,7 +1,8 @@
+<?php if(isset($_SESSION['user'])){?>
 <section class="wrapper">
     <form class="tweet-form">
         <div class="tweet-form__wrapper">
-            <img class="avatar" src="images/avatar.jpg" alt="Аватар">
+            <img class="avatar" src="<?php echo get_url($_SESSION['user']['avatar'])?>" alt="Аватар">
             <textarea class="tweet-form__text" rows="4" placeholder="Что происходит?" required></textarea>
         </div>
         <div class="tweet-form__btns">
@@ -12,3 +13,4 @@
         </div>
     </form>
 </section>
+<?php }?>
