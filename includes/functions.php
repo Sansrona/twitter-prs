@@ -10,7 +10,8 @@ function debug($var, $stop = false)
     if ($stop) die;
 }
 
-function redirect($link=''){
+function redirect($link = '')
+{
     header('Location:' . get_url($link));
     die;
 }
@@ -54,17 +55,23 @@ function db_query($sql, $exec = false)
     return db()->query($sql);
 }
 
-function get_posts($user_id = 0)
+function get_posts($user_id = 0, $sort = false)
 {
+    $sorting = 'DESC';
+    if($sort) $sorting = 'ASC';
+
     if ($user_id > 0) return db_query("SELECT posts.*, users.login, users.name, users.avatar
     FROM `posts`
     JOIN `users`
     ON users.id = posts.user_id
-    WHERE posts.user_id = $user_id")->fetchAll();
-    return db_query("SELECT posts.*, users.login, users.name, users.avatar
+    WHERE posts.user_id = $user_id
+    ORDER BY posts.`date` $sorting")->fetchAll();
+   
+   return db_query("SELECT posts.*, users.login, users.name, users.avatar
     FROM `posts`
     JOIN `users`
-    ON users.id = posts.user_id")->fetchAll();
+    ON users.id = posts.user_id
+    ORDER BY posts.`date` $sorting")->fetchAll();
 }
 
 function get_user_info($login)
@@ -101,19 +108,19 @@ function register_user($auth_data)
 
 function login($auth_data)
 {
-    if(empty($auth_data)||!isset($auth_data['login'])||empty($auth_data['login'])||!isset($auth_data['pass'])||empty($auth_data['pass'])){
+    if (empty($auth_data) || !isset($auth_data['login']) || empty($auth_data['login']) || !isset($auth_data['pass']) || empty($auth_data['pass'])) {
         return false;
     }
-    $user= get_user_info($auth_data['login']);
-    if(empty($user)){
+    $user = get_user_info($auth_data['login']);
+    if (empty($user)) {
         $_SESSION['error'] = 'Пользователь не найден';
         redirect();
     }
-    if(password_verify($auth_data['pass'], $user['pass'])){
+    if (password_verify($auth_data['pass'], $user['pass'])) {
         $_SESSION['user'] = $user;
         $_SESSION['error'] = '';
-        redirect('user_posts.php?id='.$_SESSION['user']['id']);
-    }else{
+        redirect('user_posts.php?id=' . $_SESSION['user']['id']);
+    } else {
         $_SESSION['error'] = 'Пароль не верный';
         redirect();
     }
@@ -130,3 +137,18 @@ function get_error_message()
     return $error;
 }
 
+function add_post($text, $image)
+{
+    $text = trim($text);
+    if (mb_strlen($text) > 255) {
+        $text = mb_substr($text, 0, 250) . ' ...';
+    }
+    $user_id = $_SESSION['user']['id'];
+    return db_query("INSERT INTO `posts` (`id`, `user_id`, `text`, `image`) VALUES (NULL, $user_id, '$text', '$image')", true);
+}
+
+function delete_post($id){
+    $user_id = $_SESSION['user']['id'];
+
+    return db_query("DELETE FROM `posts` WHERE `id` = $id AND `user_id` = $user_id;", true);
+}
